@@ -1,146 +1,147 @@
-# Enterprise Corporate Network – Cisco Packet Tracer
+# Enterprise Network Project
 
-## Project Overview
+Cisco Packet Tracer project based on a small enterprise network with VLAN segmentation, Layer 3 routing, ASA firewall, DHCP, NAT/PAT and basic network security.
 
-This project demonstrates the design and implementation of an enterprise-style corporate network using Cisco Packet Tracer.
+## Network
 
-The network focuses on VLAN segmentation, inter-VLAN routing, DHCP, firewall security, NAT and access control.
+The network is divided into separate VLANs:
 
----
+| VLAN | Name       | Network         | Gateway         |
+| ---- | ---------- | --------------- | --------------- |
+| 10   | OFFICE     | 192.168.10.0/24 | 192.168.10.1    |
+| 20   | SERVERS    | 192.168.20.0/24 | 192.168.20.1    |
+| 30   | PRINTERS   | 192.168.30.0/24 | 192.168.30.1    |
+| 40   | WIFI       | 192.168.40.0/24 | 192.168.40.1    |
+| 50   | MANAGEMENT | 192.168.50.0/24 | 192.168.50.1    |
+| 60   | DMZ        | 192.168.60.0/24 | Layer 2 segment |
 
-## Network Topology
+The CORE-SW handles the inter-VLAN routing.
 
-The network consists of the following main components:
+The connection between the CORE-SW and the ASA uses:
 
-- Cisco Layer 3 Core Switch
-- Cisco ASA Firewall
-- Cisco Router
-- Office PCs
-- Servers
-- Network Printer
-- Wireless Access Point
-- Wireless Clients
+* CORE-SW: `10.0.0.1/30`
+* ASA: `10.0.0.2/30`
 
-The CORE-SW provides Layer 3 routing between the internal VLANs, while the Cisco ASA provides firewall and NAT functionality toward the external network.
-
----
-
-## VLAN Configuration
-
-The network is segmented into the following VLANs:
-
-| VLAN | Name | Network | Purpose |
-|------|------|---------|---------|
-| 10 | OFFICE | 192.168.10.0/24 | Office network |
-| 20 | SERVERS | 192.168.20.0/24 | Server network |
-| 30 | PRINTERS | 192.168.30.0/24 | Printer network |
-| 40 | WIFI | 192.168.40.0/24 | Wireless network |
-| 50 | MANAGEMENT | 192.168.50.0/24 | Management network |
-
----
-
-## Layer 3 Routing
-
-The CORE-SW operates as a Layer 3 switch and provides the default gateway for the internal VLANs.
-
-| VLAN | Default Gateway |
-|------|-----------------|
-| VLAN 10 | 192.168.10.1 |
-| VLAN 20 | 192.168.20.1 |
-| VLAN 30 | 192.168.30.1 |
-| VLAN 40 | 192.168.40.1 |
-| VLAN 50 | 192.168.50.1 |
-
-Inter-VLAN routing is enabled on the CORE-SW using Switch Virtual Interfaces (SVIs).
-
----
+The CORE-SW uses the ASA as its default route.
 
 ## DHCP
 
-DHCP services are configured on the CORE-SW for the required client networks.
+DHCP is configured on the CORE-SW for the Office and Wi-Fi networks.
 
-### OFFICE
+Office:
 
-- Network: `192.168.10.0/24`
-- Default Gateway: `192.168.10.1`
-- DNS Server: `192.168.20.10`
-- Domain: `company.local`
+`192.168.10.0/24`
 
-### WIFI
+Wi-Fi:
 
-- Network: `192.168.40.0/24`
-- Default Gateway: `192.168.40.1`
-- DNS Server: `192.168.20.10`
-- Domain: `company.local`
+`192.168.40.0/24`
 
-Infrastructure addresses are excluded from the DHCP pools to prevent IP conflicts.
+The DHCP configuration also provides the internal DNS server `192.168.20.10` and the domain `company.local`.
 
----
+## ASA Firewall and NAT
 
-## Firewall & NAT
+The ASA is used as the firewall between the internal network and the simulated ISP.
 
-A Cisco ASA Firewall is used between the internal corporate network and the external network.
+Inside:
 
-The ASA provides:
+`10.0.0.2/30`
 
-- Firewall security
-- Traffic control
-- Network Address Translation (NAT)
+Outside:
 
-The internal connection between the CORE-SW and ASA uses the `10.0.0.0/30` network.
+`200.1.1.2/30`
 
-| Device | IP Address |
-|--------|------------|
-| CORE-SW | 10.0.0.1/30 |
-| ASA | 10.0.0.2/30 |
+Dynamic NAT/PAT is configured for internal networks.
 
----
+During testing, NAT translations were generated successfully:
 
-## Access Control
+```text
+translate_hits = 58
+untranslate_hits = 54
+```
 
-An extended ACL is configured to restrict traffic from the WIFI network to the SERVERS network.
+## Security
 
-- Source: `192.168.40.0/24`
-- Destination: `192.168.20.0/24`
+The following security features were configured on the CORE-SW:
 
-The ACL prevents direct access from the wireless network to the server network while permitting other traffic according to the configured policy.
+* SSH version 2
+* SSH access restricted to VLAN 50
+* Standard management ACL
+* Wi-Fi ACL
+* Port Security with sticky MAC addresses
+* Port Security violation restrict
+* PortFast
+* BPDU Guard
 
----
+The Wi-Fi ACL blocks clients from VLAN 40 from directly accessing the Server VLAN:
 
-## Network Security
+```text
+deny ip 192.168.40.0 0.0.0.255 192.168.20.0 0.0.0.255
+permit ip any any
+```
 
-The project demonstrates basic enterprise network security concepts:
+## Routing
 
-- VLAN-based network segmentation
-- Dedicated server network
-- Dedicated printer network
-- Dedicated wireless network
-- Dedicated management VLAN
-- Cisco ASA Firewall
-- NAT
-- Extended ACL
-- Separation between internal and external networks
+The CORE-SW has a default route towards the ASA:
 
----
+```text
+0.0.0.0/0 via 10.0.0.2
+```
 
-## Network Verification
+The ISP has static routes towards the internal enterprise networks through the ASA.
 
-The network configuration and connectivity can be verified using Cisco IOS commands such as:
+## Verification
 
-`show vlan brief`
+The configuration was checked using:
 
-`show ip interface brief`
+```text
+show vlan brief
+show ip interface brief
+show ip route
+show ip dhcp pool
+show ip access-lists
+show port-security
+show ip ssh
+show xlate
+show nat
+```
 
-`show ip route`
+The command outputs and verification notes are included in the `verification` folder.
 
-`show ip dhcp pool`
+Screenshots of the main configuration and verification steps are available in the `screenshots` folder.
 
-`show access-lists`
+## Packet Tracer Limitation
 
-Client connectivity can be tested using:
+The ASA available in Packet Tracer has a license limitation regarding the number of active named interfaces.
 
-`ipconfig`
+Because of this, VLAN 60 was kept as a Layer 2 DMZ segment on the CORE-SW instead of configuring it as a third fully active ASA security zone.
 
-`ping`
+The VLAN 60 SVI therefore has no IP address and is administratively disabled.
 
-Testing focuses on VLAN configuration, DHCP operation, routing, ACL behavior and network connectivity.
+The simulated Internet section also has limitations compared with a real ISP connection, but the internal routing, ASA connectivity and NAT/PAT operation were verified.
+
+## Project Structure
+
+```text
+Enterprise-Network/
+├── README.md
+├── Enterprise-Network.pkt
+├── configurations/
+├── verification/
+└── screenshots/
+```
+
+## Technologies
+
+* Cisco Packet Tracer
+* Cisco IOS
+* Cisco ASA
+* VLANs
+* Layer 3 Switching
+* Inter-VLAN Routing
+* Static Routing
+* DHCP
+* NAT/PAT
+* ACLs
+* SSH
+* Port Security
+* Spanning Tree / BPDU Guard
