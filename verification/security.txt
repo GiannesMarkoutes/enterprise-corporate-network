@@ -1,0 +1,85 @@
+# Security Verification
+
+# Devices: CORE-SW / COMPANY-ASA
+
+# Project: Enterprise Corporate Network
+
+==================================================
+SSH VERIFICATION
+================
+
+CORE-SW#show ip ssh
+
+SSH Enabled - version 2.0
+
+Authentication timeout: 120 secs
+Authentication retries: 3
+
+==================================================
+SSH MANAGEMENT ACL
+==================
+
+CORE-SW#show ip access-lists
+
+Standard IP access list SSH-MANAGEMENT
+
+```
+10 permit 192.168.50.0 0.0.0.255
+20 deny any
+```
+
+==================================================
+WIFI SECURITY ACL
+=================
+
+Extended IP access list WIFI-ACL
+
+```
+10 deny ip 192.168.40.0 0.0.0.255
+   192.168.20.0 0.0.0.255
+
+20 permit ip any any
+```
+
+==================================================
+VTY SSH RESTRICTION
+===================
+
+line vty 0 4
+access-class SSH-MANAGEMENT in
+login local
+transport input ssh
+
+line vty 5 15
+access-class SSH-MANAGEMENT in
+login local
+transport input ssh
+
+==================================================
+PORT SECURITY
+=============
+
+CORE-SW#show port-security
+
+Secure Port MaxSecureAddr CurrentAddr SecurityViolation Security Action
+
+Fa0/1        1          1                 0         Restrict
+Fa0/2        1          0                 0         Restrict
+
+==================================================
+RESULT
+======
+
+SSH version 2 is enabled on the CORE-SW.
+
+SSH management access is restricted to VLAN 50
+(192.168.50.0/24).
+
+Wi-Fi traffic from VLAN 40 is explicitly denied
+access to the Server VLAN 20.
+
+Port Security is enabled on the office access ports
+with the violation action configured as Restrict.
+
+Spanning Tree PortFast and BPDU Guard are also
+configured on the relevant access ports.
