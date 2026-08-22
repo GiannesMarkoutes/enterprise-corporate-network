@@ -1,0 +1,68 @@
+# NAT Verification
+
+# Device: COMPANY-ASA
+
+# Project: Enterprise Corporate Network
+
+==================================================
+SHOW XLATE
+==========
+
+2 in use, 2 most used
+
+Flags:
+D - DNS
+e - extended
+I - identity
+i - dynamic
+r - portmap
+s - static
+T - twice
+N - net-to-net
+
+ICMP PAT from inside:192.168.10.11/2
+to outside:200.1.1.2/24362
+flags i
+
+ICMP PAT from inside:192.168.10.21/9
+to outside:200.1.1.2/57444
+flags i
+
+==================================================
+SHOW NAT
+========
+
+Auto NAT Policies (Section 2)
+
+1 (inside) to (outside)
+source dynamic DMZ-NETWORK interface
+
+translate_hits = 0
+untranslate_hits = 0
+
+2 (inside) to (outside)
+source dynamic INSIDE-NETWORKS interface
+
+translate_hits = 58
+untranslate_hits = 54
+
+3 (inside) to (outside)
+source dynamic LANS interface
+
+translate_hits = 0
+untranslate_hits = 0
+
+==================================================
+RESULT
+======
+
+NAT/PAT is operational on the COMPANY-ASA.
+
+The INSIDE-NETWORKS policy generated active
+translation traffic during connectivity testing.
+
+translate_hits = 58
+untranslate_hits = 54
+
+This confirms that internal traffic is being
+translated toward the outside interface.
