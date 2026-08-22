@@ -1,0 +1,70 @@
+!
+ASA Version 8.4(2)
+!
+hostname COMPANY-ASA
+domain-name company.local
+!
+enable password [REDACTED]
+passwd [REDACTED]
+!
+names
+!
+interface Ethernet0/0
+ switchport access vlan 2
+!
+interface Ethernet0/1
+!
+interface Ethernet0/2
+ switchport access vlan 3
+!
+interface Ethernet0/3
+!
+interface Ethernet0/4
+!
+interface Ethernet0/5
+!
+interface Ethernet0/6
+!
+interface Ethernet0/7
+!
+interface Vlan1
+ nameif inside
+ security-level 100
+ ip address 10.0.0.2 255.255.255.252
+!
+interface Vlan2
+ nameif outside
+ security-level 0
+ ip address 200.1.1.2 255.255.255.252
+!
+interface Vlan3
+ no nameif
+ no security-level
+ no ip address
+!
+object network DMZ-NETWORK
+ subnet 192.168.60.0 255.255.255.0
+ nat (inside,outside) dynamic interface
+!
+object network INSIDE-NETWORKS
+ subnet 192.168.0.0 255.255.0.0
+ nat (inside,outside) dynamic interface
+!
+object network LANS
+ subnet 192.168.0.0 255.255.0.0
+ nat (inside,outside) dynamic interface
+!
+route outside 0.0.0.0 0.0.0.0 200.1.1.1 1
+route inside 192.168.10.0 255.255.255.0 10.0.0.1 1
+route inside 192.168.20.0 255.255.255.0 10.0.0.1 1
+route inside 192.168.30.0 255.255.255.0 10.0.0.1 1
+route inside 192.168.40.0 255.255.255.0 10.0.0.1 1
+route inside 192.168.50.0 255.255.255.0 10.0.0.1 1
+route inside 192.168.60.0 255.255.255.0 10.0.0.1 1
+!
+telnet timeout 5
+ssh timeout 5
+!
+dhcpd auto_config outside
+dhcpd enable inside
+!
