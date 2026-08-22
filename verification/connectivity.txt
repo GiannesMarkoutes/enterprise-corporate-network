@@ -1,0 +1,104 @@
+# Connectivity Verification
+
+# Project: Enterprise Corporate Network
+
+# Environment: Cisco Packet Tracer
+
+==================================================
+CORE-SW → COMPANY-ASA
+=====================
+
+Source:
+CORE-SW
+
+Destination:
+10.0.0.2
+
+Result:
+SUCCESS
+
+==================================================
+COMPANY-ASA → ISP
+=================
+
+Source:
+COMPANY-ASA
+
+Destination:
+200.1.1.1
+
+Result:
+SUCCESS
+
+==================================================
+CORE-SW DEFAULT ROUTE
+=====================
+
+Default route:
+
+0.0.0.0/0 via 10.0.0.2
+
+==================================================
+ISP ROUTING
+===========
+
+Enterprise networks are routed through:
+
+200.1.1.2
+
+Configured networks:
+
+192.168.10.0/24
+192.168.20.0/24
+192.168.30.0/24
+192.168.40.0/24
+192.168.50.0/24
+192.168.60.0/24
+
+==================================================
+END-TO-END TESTING
+==================
+
+Internal client traffic successfully reaches the
+COMPANY-ASA and generates NAT/PAT translations.
+
+NAT verification:
+
+translate_hits = 58
+untranslate_hits = 54
+
+==================================================
+PACKET TRACER LIMITATION
+========================
+
+Connectivity toward the simulated upstream Internet
+is partially limited by the Packet Tracer environment.
+
+The ISP-facing addresses:
+
+100.100.100.1
+100.100.100.2
+
+were not fully reachable during end-to-end testing.
+
+The internal enterprise path and ASA NAT operation
+were verified successfully.
+
+==================================================
+RESULT
+======
+
+The enterprise internal routing path is operational:
+
+CLIENT
+↓
+CORE-SW
+↓
+COMPANY-ASA
+↓
+ISP
+
+The remaining limitation is associated with the
+simulated Internet segment in Packet Tracer and does
+not invalidate the demonstrated enterprise network
+architecture.
