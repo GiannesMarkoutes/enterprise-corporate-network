@@ -1,1 +1,56 @@
+# DHCP Verification
+
+# Device: CORE-SW
+
+# Project: Enterprise Corporate Network
+
+==================================================
+SHOW IP DHCP POOL
+=================
+
+Pool OFFICE :
+
+Utilization mark (high/low)    : 100 / 0
+Total addresses                : 254
+Leased addresses               : 1
+Excluded addresses             : 5
+
+Network:
+192.168.10.0/24
+
+Default Gateway:
+192.168.10.1
+
+DNS Server:
+192.168.20.10
+
+---
+
+Pool WIFI :
+
+Utilization mark (high/low)    : 100 / 0
+Total addresses                : 254
+Leased addresses               : 1
+Excluded addresses             : 5
+
+Network:
+192.168.40.0/24
+
+Default Gateway:
+192.168.40.1
+
+DNS Server:
+192.168.20.10
+
+==================================================
+RESULT
+======
+
+DHCP is configured on the CORE-SW for:
+
+* OFFICE VLAN 10
+* WIFI VLAN 40
+
+Both DHCP pools successfully issued IP addresses
+during network verification.
 
