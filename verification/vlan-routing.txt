@@ -1,1 +1,74 @@
+# VLAN & Routing Verification
+
+# Device: CORE-SW
+
+# Project: Enterprise Corporate Network
+
+==================================================
+SHOW VLAN BRIEF
+===============
+
+VLAN Name                             Status    Ports
+
+1    default                          active    Fa0/10, Fa0/11, Fa0/12, Fa0/13
+Fa0/14, Fa0/15, Fa0/16, Fa0/17
+Fa0/18, Fa0/19, Fa0/20, Fa0/21
+Fa0/22, Fa0/23, Fa0/24, Gig0/2
+
+10   OFFICE                           active    Fa0/1, Fa0/2
+
+20   SERVERS                          active    Fa0/3
+
+30   PRINTERS                         active    Fa0/4
+
+40   WIFI                             active    Fa0/5, Fa0/6
+
+50   MANAGEMENT                       active    Fa0/7
+
+60   DMZ                              active    Fa0/8, Fa0/9
+
+==================================================
+SHOW IP INTERFACE BRIEF
+=======================
+
+GigabitEthernet0/1     10.0.0.1        up                    up
+
+Vlan10                 192.168.10.1    up                    up
+Vlan20                 192.168.20.1    up                    up
+Vlan30                 192.168.30.1    up                    up
+Vlan40                 192.168.40.1    up                    up
+Vlan50                 192.168.50.1    up                    up
+
+Vlan60                 unassigned      administratively down down
+
+==================================================
+SHOW IP ROUTE
+=============
+
+Gateway of last resort is 10.0.0.2 to network 0.0.0.0
+
+10.0.0.0/30 is subnetted, 1 subnets
+C       10.0.0.0 is directly connected, GigabitEthernet0/1
+
+C    192.168.10.0/24 is directly connected, Vlan10
+C    192.168.20.0/24 is directly connected, Vlan20
+C    192.168.30.0/24 is directly connected, Vlan30
+C    192.168.40.0/24 is directly connected, Vlan40
+C    192.168.50.0/24 is directly connected, Vlan50
+
+S*   0.0.0.0/0 [1/0] via 10.0.0.2
+
+==================================================
+RESULT
+======
+
+VLAN segmentation and Layer 3 inter-VLAN routing
+are configured on the CORE-SW.
+
+The CORE-SW uses 10.0.0.2 (COMPANY-ASA inside
+interface) as its default route.
+
+VLAN 60 is retained as a Layer 2 DMZ segment due
+to the ASA interface limitations of the Packet Tracer
+environment.
 
