@@ -1,0 +1,230 @@
+!
+version 12.2(37)SE1
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+service password-encryption
+!
+hostname CORE-SW
+!
+!
+no profinet
+!
+!
+ip dhcp excluded-address 192.168.10.1 192.168.10.20
+ip dhcp excluded-address 192.168.20.1 192.168.20.20
+ip dhcp excluded-address 192.168.30.1 192.168.30.20
+ip dhcp excluded-address 192.168.40.1 192.168.40.20
+ip dhcp excluded-address 192.168.50.1 192.168.50.20
+!
+ip dhcp pool OFFICE
+ network 192.168.10.0 255.255.255.0
+ default-router 192.168.10.1
+ dns-server 192.168.20.10
+ domain-name company.local
+ip dhcp pool WIFI
+ network 192.168.40.0 255.255.255.0
+ default-router 192.168.40.1
+ dns-server 192.168.20.10
+ domain-name company.local
+!
+!
+ip routing
+!
+!
+!
+!
+username admin privilege 15 secret 5 $1$mERr$gjNBR1u.Is9z7oaYvbvh//
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+ip ssh version 2
+no ip domain-lookup
+ip domain-name company.local
+!
+!
+spanning-tree mode pvst
+!
+!
+!
+!
+!
+!
+interface FastEthernet0/1
+ description OFFICE_PC1
+ switchport access vlan 10
+ switchport mode access
+ switchport port-security
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky 0003.E462.7E19
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/2
+ description OFFICE_PC2
+ switchport access vlan 10
+ switchport mode access
+ switchport port-security
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/3
+ description SERVER
+ switchport access vlan 20
+ switchport mode access
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/4
+ description PRINTER
+ switchport access vlan 30
+ switchport mode access
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/5
+ description ACCESS_POINT
+ switchport access vlan 40
+ switchport mode access
+ ip access-group WIFI-ACL in
+ shutdown
+!
+interface FastEthernet0/6
+ description WRT300N_ACCESS_POINT
+ switchport access vlan 40
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/7
+ description MANAGEMENT
+ switchport access vlan 50
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/8
+ description DMZ_SERVER
+ switchport access vlan 60
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/9
+ description LINK_TO_ASA_DMZ
+ switchport access vlan 60
+ switchport mode access
+ spanning-tree portfast
+!
+interface FastEthernet0/10
+!
+interface FastEthernet0/11
+!
+interface FastEthernet0/12
+!
+interface FastEthernet0/13
+!
+interface FastEthernet0/14
+!
+interface FastEthernet0/15
+!
+interface FastEthernet0/16
+!
+interface FastEthernet0/17
+!
+interface FastEthernet0/18
+!
+interface FastEthernet0/19
+!
+interface FastEthernet0/20
+!
+interface FastEthernet0/21
+!
+interface FastEthernet0/22
+!
+interface FastEthernet0/23
+!
+interface FastEthernet0/24
+!
+interface GigabitEthernet0/1
+ description LINK_TO_ASA
+ no switchport
+ ip address 10.0.0.1 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/2
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+interface Vlan10
+ mac-address 00e0.8f3b.6a01
+ ip address 192.168.10.1 255.255.255.0
+!
+interface Vlan20
+ mac-address 00e0.8f3b.6a02
+ ip address 192.168.20.1 255.255.255.0
+!
+interface Vlan30
+ mac-address 00e0.8f3b.6a03
+ ip address 192.168.30.1 255.255.255.0
+!
+interface Vlan40
+ mac-address 00e0.8f3b.6a04
+ ip address 192.168.40.1 255.255.255.0
+!
+interface Vlan50
+ mac-address 00e0.8f3b.6a05
+ ip address 192.168.50.1 255.255.255.0
+!
+interface Vlan60
+ mac-address 00e0.8f3b.6a06
+ ip address 192.168.60.1 255.255.255.0
+!
+ip classless
+ip route 0.0.0.0 0.0.0.0 10.0.0.2
+!
+ip flow-export version 9
+!
+!
+ip access-list standard SSH-MANAGEMENT
+ permit 192.168.50.0 0.0.0.255
+ deny any
+!
+banner motd ^C
+****************************************
+AUTHORIZED USERS ONLY
+Company Enterprise Network
+****************************************
+^C
+!
+!
+!
+!
+line con 0
+ password 7 0802455D0A1625464058
+ login
+!
+line aux 0
+!
+line vty 0 4
+ access-class SSH-MANAGEMENT in
+ login local
+ transport input ssh
+line vty 5 15
+ access-class SSH-MANAGEMENT in
+ login local
+ transport input ssh
+!
+!
+!
+!
+end
