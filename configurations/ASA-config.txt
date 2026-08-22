@@ -4,18 +4,24 @@ ASA Version 8.4(2)
 hostname COMPANY-ASA
 domain-name company.local
 !
-enable password [REDACTED]
-passwd [REDACTED]
+enable password <REDACTED>
+passwd <REDACTED>
 !
 names
 !
+!
+! Inside interface
+!
 interface Ethernet0/0
- switchport access vlan 2
+switchport access vlan 2
 !
 interface Ethernet0/1
 !
+!
+! DMZ interface reservation
+!
 interface Ethernet0/2
- switchport access vlan 3
+switchport access vlan 3
 !
 interface Ethernet0/3
 !
@@ -27,44 +33,75 @@ interface Ethernet0/6
 !
 interface Ethernet0/7
 !
+!
+! Inside network
+!
 interface Vlan1
- nameif inside
- security-level 100
- ip address 10.0.0.2 255.255.255.252
+nameif inside
+security-level 100
+ip address 10.0.0.2 255.255.255.252
+!
+!
+! Outside network
 !
 interface Vlan2
- nameif outside
- security-level 0
- ip address 200.1.1.2 255.255.255.252
+nameif outside
+security-level 0
+ip address 200.1.1.2 255.255.255.252
+!
+!
+! Reserved DMZ VLAN
+! Cannot be configured as a third named security zone
+! due to Packet Tracer ASA license limitations.
 !
 interface Vlan3
- no nameif
- no security-level
- no ip address
+no nameif
+no security-level
+no ip address
+!
+!
+! NAT configuration
 !
 object network DMZ-NETWORK
- subnet 192.168.60.0 255.255.255.0
- nat (inside,outside) dynamic interface
+subnet 192.168.60.0 255.255.255.0
+nat (inside,outside) dynamic interface
 !
 object network INSIDE-NETWORKS
- subnet 192.168.0.0 255.255.0.0
- nat (inside,outside) dynamic interface
+subnet 192.168.0.0 255.255.0.0
+nat (inside,outside) dynamic interface
 !
 object network LANS
- subnet 192.168.0.0 255.255.0.0
- nat (inside,outside) dynamic interface
+subnet 192.168.0.0 255.255.0.0
+nat (inside,outside) dynamic interface
+!
+!
+! Routes toward internal VLANs
+!
+route inside 192.168.10.0 255.255.255.0 10.0.0.1
+route inside 192.168.20.0 255.255.255.0 10.0.0.1
+route inside 192.168.30.0 255.255.255.0 10.0.0.1
+route inside 192.168.40.0 255.255.255.0 10.0.0.1
+route inside 192.168.50.0 255.255.255.0 10.0.0.1
+route inside 192.168.60.0 255.255.255.0 10.0.0.1
+!
+!
+! Default route toward ISP
 !
 route outside 0.0.0.0 0.0.0.0 200.1.1.1 1
-route inside 192.168.10.0 255.255.255.0 10.0.0.1 1
-route inside 192.168.20.0 255.255.255.0 10.0.0.1 1
-route inside 192.168.30.0 255.255.255.0 10.0.0.1 1
-route inside 192.168.40.0 255.255.255.0 10.0.0.1 1
-route inside 192.168.50.0 255.255.255.0 10.0.0.1 1
-route inside 192.168.60.0 255.255.255.0 10.0.0.1 1
+!
+!
+! Management / connection settings
 !
 telnet timeout 5
 ssh timeout 5
 !
+!
+! DHCP
+! Packet Tracer automatically enables DHCP on the inside interface.
+!
 dhcpd auto_config outside
 dhcpd enable inside
 !
+!
+!
+end
